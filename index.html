@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asthara Skyfront City — Simulasi KPR & Property Quotation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0D2137;
+      --navy-soft: #163454;
+      --gold: #B4925A;
+      --gold-light: #F7F2E8;
+      --bg: #F3F5F8;
+      --card: #FFFFFF;
+      --ink: #1E293B;
+      --muted: #64748B;
+      --line: #E2E8F0;
+      --danger-bg: #FEF2F2;
+      --danger-ink: #B91C1C;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.45;
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 2px 10px rgba(13, 33, 55, 0.16);
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: #CBD5E1;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .mobile-tabs {
+      display: none;
+      width: 100%;
+      gap: 8px;
+    }
+
+    .mobile-tabs button {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: #E2E8F0;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .mobile-tabs button.active {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s ease;
+    }
+
+    .btn-gold { background: var(--gold); color: #fff; }
+    .btn-gold:hover { filter: brightness(0.95); }
+    .btn-light { background: #fff; color: var(--navy); }
+    .btn-light:hover { background: #F1F5F9; }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 1px solid #CBD5E1;
+    }
+    .btn-outline:hover { background: #F8FAFC; }
+
+    .workspace {
+      max-width: 1360px;
+      margin: 20px auto 90px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--navy);
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-gap { margin-top: 18px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field { margin-bottom: 11px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .helper-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--ink);
+      background: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(13, 33, 55, 0.08);
+    }
+
+    .locked-fields-wrap {
+      transition: opacity 0.2s ease;
+    }
+
+    .locked-fields-wrap.is-locked {
+      opacity: 0.55;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .locked-fields-wrap.is-locked input,
+    .locked-fields-wrap.is-locked select,
+    .locked-fields-wrap.is-locked button {
+      background: #F1F5F9;
+      color: #94A3B8;
+      cursor: not-allowed;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .input-group input { flex: 1; }
+    .input-group select { width: 84px; padding: 9px 6px; }
+
+    .scheme-pills {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .scheme-btn {
+      padding: 9px 8px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #F8FAFC;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .scheme-btn.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #F8FAFC;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--navy);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .alert {
+      background: var(--danger-bg);
+      color: var(--danger-ink);
+      border: 1px solid #FECACA;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .locked-banner {
+      background: var(--danger-bg);
+      color: var(--danger-ink);
+      border: 1px solid #FECACA;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .wa-box {
+      background: #F8FAFC;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .wa-box textarea {
+      font-size: 12.5px;
+      line-height: 1.5;
+      min-height: 175px;
+      resize: vertical;
+      margin-bottom: 8px;
+    }
+
+    .wa-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .copy-status {
+      font-size: 12px;
+      color: #15803D;
+      font-weight: 600;
+    }
+
+    /* QUOTATION SHEET (1 PAGE A4 STYLE) */
+    .quote-sheet {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+      max-width: 820px;
+      margin: 0 auto;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0D2137 0%, #163454 100%);
+      color: #FFFFFF;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .q-brand {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.2;
+    }
+
+    .q-brand-tag {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #F3D59B;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .q-meta {
+      text-align: right;
+      font-size: 11px;
+      color: #E2E8F0;
+    }
+
+    .q-meta strong { color: #FFFFFF; }
+
+    .q-client-bar {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--gold-light);
+      border-left: 4px solid var(--gold);
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-size: 12px;
+    }
+
+    .q-unit-box {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 14px;
+      padding: 11px 14px;
+      border: 1px solid #DCE4EE;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      background: #F8FAFC;
+    }
+
+    .q-unit-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+
+    .q-unit-spec {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 4px;
+    }
+
+    .q-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #E8F1FA;
+      color: var(--navy);
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11.5px;
+      padding: 2px 0;
+    }
+
+    .price-row.promo-highlight {
+      color: #0F766E;
+      font-weight: 600;
+    }
+
+    .price-row.total {
+      border-top: 1px dashed #CBD5E1;
+      margin-top: 4px;
+      padding-top: 5px;
+      font-weight: 800;
+      color: var(--navy);
+      font-size: 12.5px;
+    }
+
+    .hero-payment {
+      background: linear-gradient(135deg, #0D2137 0%, #153250 100%);
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .hero-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: #CBD5E1;
+      font-weight: 700;
+    }
+
+    .hero-amount {
+      font-size: 24px;
+      font-weight: 800;
+      color: #F8E5BE;
+      margin: 2px 0;
+    }
+
+    .hero-sub {
+      font-size: 11.5px;
+      color: #E2E8F0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .q-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      margin-bottom: 8px;
+    }
+
+    .q-table th {
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--navy);
+      background: #F1F5F9;
+      border-bottom: 1.5px solid #CBD5E1;
+      padding: 5px 8px;
+    }
+
+    .q-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid #EDF2F7;
+      vertical-align: top;
+    }
+
+    .q-table td.num, .q-table th.num { text-align: right; }
+
+    .q-table tr.highlight td {
+      font-weight: 800;
+      color: var(--navy);
+      background: var(--gold-light);
+      border-top: 1.5px solid var(--gold);
+      border-bottom: 1.5px solid var(--gold);
+      font-size: 12px;
+    }
+
+    .q-table tr.spacer-row td {
+      height: 10px;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    .q-table tr.ajb-note td {
+      color: #475569;
+      font-size: 11.5px;
+      background: #F8FAFC;
+      border-top: 1px dashed #CBD5E1;
+    }
+
+    .ajb-subnote {
+      display: block;
+      margin-top: 2px;
+      font-size: 10px;
+      color: #0F766E;
+      font-weight: 600;
+    }
+
+    .excluded-fee-note {
+      font-size: 10.5px;
+      color: #64748B;
+      font-style: italic;
+      margin-bottom: 10px;
+      padding: 0 2px;
+      display: none;
+    }
+
+    .income-note {
+      background: #EFF6FF;
+      border-left: 3px solid #2563EB;
+      color: #1E3A8A;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .q-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      padding-top: 8px;
+      border-top: 1px solid #CBD5E1;
+    }
+
+    .disclaimer-text {
+      font-size: 9.5px;
+      line-height: 1.38;
+      color: var(--muted);
+      max-width: 540px;
+    }
+
+    .sales-card {
+      text-align: right;
+      color: var(--navy);
+      font-size: 11.5px;
+      white-space: nowrap;
+    }
+
+    .sticky-mobile-bar {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 16px;
+      z-index: 25;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -4px 16px rgba(13, 33, 55, 0.2);
+    }
+
+    @media (max-width: 960px) {
+      .mobile-tabs { display: flex; }
+      .workspace { grid-template-columns: 1fr; }
+      .panel-input.hidden-tab, .panel-preview.hidden-tab { display: none; }
+      .sticky-mobile-bar { display: flex; }
+      .q-unit-box { grid-template-columns: 1fr; }
+      .quote-sheet { padding: 16px; }
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .topbar, .panel-input, .sticky-mobile-bar, .no-print { display: none !important; }
+      .workspace, .panel-preview {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #fff !important;
+      }
+      .quote-sheet {
+        box-shadow: none !important;
+        border: 1px solid #E2E8F0 !important;
+        padding: 12px 16px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .q-header { padding: 9px 14px; }
+      .q-brand { font-size: 18px; }
+      .q-client-bar { margin: 8px 0; padding: 6px 12px; }
+      .q-unit-box { padding: 8px 12px; margin-bottom: 8px; gap: 10px; }
+      .q-unit-name { font-size: 18px; }
+      .q-unit-spec { font-size: 12.5px; }
+      .hero-payment { padding: 10px 14px; margin-bottom: 8px; }
+      .hero-amount { font-size: 21px; }
+      .q-table { margin-bottom: 6px; font-size: 11px; }
+      .q-table td, .q-table th { padding: 4px 7px; }
+      .q-table tr.spacer-row td { height: 8px; padding: 0; }
+      .excluded-fee-note { font-size: 9.5px; margin-bottom: 8px; }
+      .q-footer { padding-top: 6px; }
+      .disclaimer-text { font-size: 9px; line-height: 1.35; }
+      @page {
+        size: A4 portrait;
+        margin: 7mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div class="brand-title">ASTHARA SKYFRONT CITY</div>
+      <div class="brand-sub">Sales Pitching &amp; Property Quotation System</div>
+    </div>
+
+    <div class="actions no-print">
+      <button type="button" class="btn btn-light" onclick="resetDefaults()">Reset</button>
+      <button type="button" class="btn btn-gold" onclick="handlePrintPdf()">Save / Cetak PDF</button>
+    </div>
+
+    <div class="mobile-tabs no-print">
+      <button type="button" id="tabInputBtn" class="active" onclick="switchMobileTab('input')">1. Input Sales</button>
+      <button type="button" id="tabPreviewBtn" onclick="switchMobileTab('preview')">2. Preview Quotation</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- PANEL INPUT SALES -->
+    <section class="panel panel-input" id="panelInput">
+      <h2 class="panel-title">1. Data Transaksi &amp; Unit</h2>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="customerName">Nama Customer *</label>
+          <input type="text" id="customerName" placeholder="Wajib diisi (cth: Johny)" oninput="renderAll()" />
+        </div>
+        <div class="field">
+          <label for="salesName">Nama Sales *</label>
+          <input type="text" id="salesName" placeholder="Wajib diisi (cth: Leo)" oninput="renderAll()" />
+        </div>
+      </div>
+
+      <div id="requiredIdentityAlert" class="alert"></div>
+
+      <div id="lockedFieldsWrap" class="locked-fields-wrap">
+        <div class="field">
+          <label for="unitSelect">Preset Cluster / Tipe Unit</label>
+          <select id="unitSelect" onchange="applyUnitPreset()">
+            <option value="custom">-- Input Manual / Custom --</option>
+            <optgroup label="Cluster Allurea (PL Juli 2026)">
+              <option value="Cluster Allurea — Tipe A|LT 60 m² / LB 67 m²|1271949000" selected>Allurea — Tipe A (LT 60 / LB 67 • Rp 1.271.949.000)</option>
+              <option value="Cluster Allurea — Tipe E|LT 70 m² / LB 78,6 m²|1680318000">Allurea — Tipe E (LT 70 / LB 78,6 • Rp 1.680.318.000)</option>
+            </optgroup>
+            <optgroup label="Cluster Allurea Extension (PL Juli 2026)">
+              <option value="Cluster Allurea Extension — Tipe C|LT 96 m² / LB 107 m²|2236983000">Allurea Ext — Tipe C (LT 96 / LB 107 • Rp 2.236.983.000)</option>
+              <option value="Cluster Allurea Extension — Tipe C+|LT 120 m² / LB 134 m²|2991339000">Allurea Ext — Tipe C+ (LT 120 / LB 134 • Rp 2.991.339.000)</option>
+            </optgroup>
+            <optgroup label="Ruko The Floritz Gallery (PL Juni 2026)">
+              <option value="The Floritz Gallery — Gallery Prime|LT 75 m² / LB 162,81 m²|2885778000">The Floritz Gallery — Gallery Prime (Rp 2.885.778.000)</option>
+              <option value="The Floritz Gallery — Gallery Signature|LT 120 m² / LB 265,16 m²|5844483000">The Floritz Gallery — Gallery Signature (Rp 5.844.483.000)</option>
+            </optgroup>
+            <optgroup label="Ruko The Floritz Gallery Phase 2 (PL Juli 2026)">
+              <option value="The Floritz Gallery Phase 2 — Gallery Prime|LT 75 m² / LB 162,81 m²|2992560000">The Floritz Gallery Phase 2 — Gallery Prime (Rp 2.992.560.000)</option>
+              <option value="The Floritz Gallery Phase 2 — Gallery Signature|LT 120 m² / LB 265,16 m²|6060711000">The Floritz Gallery Phase 2 — Gallery Signature (Rp 6.060.711.000)</option>
+            </optgroup>
+          </select>
+          <div class="helper-note">Harga preset adalah pricelist awal sebelum dipotong promo/PPN DTP. Harga per blok/posisi/skema dapat disesuaikan manual.</div>
+        </div>
+
+        <div class="field">
+          <label for="unitTitle">Nama Cluster &amp; Tipe Unit</label>
+          <input type="text" id="unitTitle" value="Cluster Allurea — Tipe A" oninput="renderAll()" />
+        </div>
+
+        <div class="field">
+          <label for="unitSpec">Spesifikasi Singkat (LT / LB)</label>
+          <input type="text" id="unitSpec" value="LT 60 m² / LB 67 m²" oninput="renderAll()" />
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="unitPrice">Harga Unit Pricelist (Rp)</label>
+            <input type="number" id="unitPrice" value="1271949000" min="0" step="1000000" oninput="renderAll()" />
+          </div>
+          <div class="field">
+            <label for="bookingFee">Booking Fee (Rp) *</label>
+            <input type="number" id="bookingFee" value="25000000" min="0" step="1000000" oninput="renderAll()" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="promoVal">Developer Promo</label>
+            <div class="input-group">
+              <input type="number" id="promoVal" value="0" min="0" step="any" oninput="renderAll()" />
+              <select id="promoType" onchange="renderAll()">
+                <option value="pct" selected>%</option>
+                <option value="rp">Rp</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="ppnDtp">Free PPN DTP</label>
+            <select id="ppnDtp" onchange="renderAll()">
+              <option value="no" selected>No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <h2 class="panel-title section-gap">2. Cara Bayar</h2>
+
+        <div class="scheme-pills">
+          <button type="button" class="scheme-btn active" id="btnKprExpress" onclick="setScheme('kpr_express')">KPR (DP 1x)</button>
+          <button type="button" class="scheme-btn" id="btnKprCicil" onclick="setScheme('kpr_cicil')">Opsi DP Cicil</button>
+          <button type="button" class="scheme-btn" id="btnCash" onclick="setScheme('cash_bertahap')">Cash Bertahap</button>
+          <button type="button" class="scheme-btn" id="btnCashKeras" onclick="setScheme('cash_keras')">Cash Keras</button>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <!-- FORM KPR (DP 1X & OPSI DP CICIL) -->
+        <div id="kprInputs">
+          <div class="grid-2">
+            <div class="field">
+              <label for="dpVal">DP dari FTP</label>
+              <div class="input-group">
+                <input type="number" id="dpVal" value="10" min="0" step="any" oninput="renderAll()" />
+                <select id="dpType" onchange="renderAll()">
+                  <option value="pct" selected>%</option>
+                  <option value="rp">Rp</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="tenorYears">Tenor KPR (Tahun)</label>
+              <input type="number" id="tenorYears" value="15" min="1" max="35" step="1" oninput="renderAll()" />
+            </div>
+          </div>
+
+          <div id="dpCicilField" class="field" style="display:none;">
+            <label for="dpTenorMonths">Durasi Cicilan DP (Bulan)</label>
+            <input type="number" id="dpTenorMonths" value="6" min="1" max="36" step="1" oninput="renderAll()" />
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="fixedRate">Bunga Fixed (%/thn)</label>
+              <input type="number" id="fixedRate" value="7" min="0" max="30" step="0.01" oninput="renderAll()" />
+            </div>
+            <div class="field">
+              <label for="fixedYears">Lama Fixed (Tahun)</label>
+              <input type="number" id="fixedYears" value="3" min="0" max="35" step="1" oninput="renderAll()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="floatingRate">Bunga Floating (%/thn)</label>
+              <input type="number" id="floatingRate" placeholder="Kosong = Fixed" min="0" max="30" step="0.01" oninput="renderAll()" />
+            </div>
+            <div class="field">
+              <label for="bankFeePct">Biaya Bank / KPR (% Plafon)</label>
+              <input type="number" id="bankFeePct" value="3" min="0" max="20" step="0.05" oninput="renderAll()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="subsidiVal">Subsidi Biaya KPR (Plafon)</label>
+              <div class="input-group">
+                <input type="number" id="subsidiVal" value="0" min="0" step="any" oninput="renderAll()" />
+                <select id="subsidiType" onchange="renderAll()">
+                  <option value="pct">%</option>
+                  <option value="rp">Rp</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="legalFeePct">Biaya Legal / Surat (% FTP)</label>
+              <input type="number" id="legalFeePct" value="7" min="0" max="20" step="0.05" oninput="renderAll()" />
+              <div class="helper-note">Dibayarkan nanti saat siap AJB (di luar dana awal).</div>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <span>Tampilkan Estimasi Biaya KPR</span>
+            <input type="checkbox" id="showKprFeeToggle" onchange="renderAll()" />
+          </div>
+
+          <div class="toggle-row">
+            <span>Tampilkan Estimasi Biaya Legal / Surat-Surat</span>
+            <input type="checkbox" id="showLegalFeeToggle" onchange="renderAll()" />
+          </div>
+
+          <div class="toggle-row">
+            <span>Tampilkan Estimasi Penghasilan Ideal</span>
+            <input type="checkbox" id="showIncomeToggle" onchange="renderAll()" />
+          </div>
+        </div>
+
+        <!-- FORM CASH BERTAHAP -->
+        <div id="cashInputs" style="display:none;">
+          <div class="field">
+            <label for="cashMonths">Durasi Cicilan Cash Bertahap (Bulan)</label>
+            <input type="number" id="cashMonths" value="24" min="1" max="120" step="1" oninput="renderAll()" />
+          </div>
+        </div>
+
+        <!-- FORM CASH KERAS -->
+        <div id="cashKerasInputs" style="display:none;">
+          <div class="field">
+            <label for="specialPromoVal">Special Promo (Cash Keras)</label>
+            <div class="input-group">
+              <input type="number" id="specialPromoVal" value="0" min="0" step="any" oninput="renderAll()" />
+              <select id="specialPromoType" onchange="renderAll()">
+                <option value="pct" selected>%</option>
+                <option value="rp">Rp</option>
+              </select>
+            </div>
+            <div class="helper-note">Dihitung setelah Developer Promo dipotong dari harga pricelist (tidak digabung).</div>
+          </div>
+
+          <div class="field">
+            <label for="cashKerasLegalPct">Biaya Legal / Surat (% FTP)</label>
+            <input type="number" id="cashKerasLegalPct" value="7" min="0" max="20" step="0.05" oninput="renderAll()" />
+            <div class="helper-note">Dibayarkan nanti saat siap AJB (di luar pelunasan unit).</div>
+          </div>
+
+          <div class="toggle-row">
+            <span>Tampilkan Estimasi Biaya Legal / Surat-Surat</span>
+            <input type="checkbox" id="showCashLegalToggle" onchange="renderAll()" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="printDate">Tanggal Cetak</label>
+          <input type="date" id="printDate" oninput="renderAll()" />
+        </div>
+      </div>
+
+      <!-- TEKS WHATSAPP OTOMATIS -->
+      <div class="wa-box no-print">
+        <label for="waText">Format Teks WhatsApp (Siap Copy-Paste)</label>
+        <textarea id="waText" readonly></textarea>
+        <div class="wa-actions">
+          <button type="button" class="btn btn-outline" id="copyWaBtn" onclick="copyWaText()">Copy Text</button>
+          <span id="copyStatus" class="copy-status"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL PREVIEW QUOTATION -->
+    <section class="panel panel-preview hidden-tab" id="panelPreview">
+      <div id="lockedBanner" class="locked-banner no-print"></div>
+
+      <article class="quote-sheet" id="quoteSheet">
+        <div class="q-header">
+          <div>
+            <div class="q-brand">ASTHARA SKYFRONT CITY</div>
+            <div class="q-brand-tag">Private Property Quotation</div>
+          </div>
+          <div class="q-meta">
+            <div>Tanggal Cetak: <strong id="outDate">-</strong></div>
+            <div>Ref: <strong id="outRef">-</strong></div>
+          </div>
+        </div>
+
+        <div class="q-client-bar">
+          <div>Penawaran terbaik untuk: <strong id="outCustomer">-</strong></div>
+          <div>Skema Bayar: <strong id="outSchemeLabel">KPR (DP 1x Bayar)</strong></div>
+        </div>
+
+        <div class="q-unit-box">
+          <div>
+            <div class="q-unit-name" id="outUnitTitle">Cluster Allurea — Tipe A</div>
+            <div class="q-unit-spec" id="outUnitSpec">LT 60 m² / LB 67 m²</div>
+            <div class="q-badge" id="outBenefitBadge">Asthara Skyfront City</div>
+          </div>
+          <div id="priceBreakdownBox">
+            <div class="price-row">
+              <span>Harga Pricelist</span>
+              <span id="outBasePrice">Rp 0</span>
+            </div>
+            <div class="price-row promo-highlight" id="outPromoRow">
+              <span>Developer Promo</span>
+              <span id="outPromoVal">- Rp 0</span>
+            </div>
+            <div class="price-row promo-highlight" id="outSpecialPromoRow" style="display:none;">
+              <span>Special Promo</span>
+              <span id="outSpecialPromoVal">- Rp 0</span>
+            </div>
+            <div class="price-row promo-highlight" id="outPpnRow" style="display:none;">
+              <span>Free PPN DTP</span>
+              <span>Aktif</span>
+            </div>
+            <div class="price-row total">
+              <span>Final Transaction Price (FTP)</span>
+              <span id="outFtp">Rp 0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-payment" id="heroPaymentBox"></div>
+
+        <div class="income-note" id="incomeNoteBox"></div>
+
+        <table class="q-table">
+          <thead>
+            <tr>
+              <th>Komponen Rincian</th>
+              <th class="num">Estimasi Nilai</th>
+            </tr>
+          </thead>
+          <tbody id="breakdownBody"></tbody>
+        </table>
+
+        <div class="excluded-fee-note" id="excludedFeeNote"></div>
+
+        <div class="q-footer">
+          <div class="disclaimer-text">
+            Perhitungan bersifat simulasi awal dan tidak mengikat. Harga, promo, dan program penawaran dapat berubah sewaktu-waktu sesuai ketentuan yang berlaku serta persetujuan bank/instansi terkait.
+          </div>
+          <div class="sales-card">
+            <div>Property Consultant</div>
+            <strong id="outSalesName">-</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="sticky-mobile-bar no-print">
+    <div>
+      <div style="font-size:10.5px; color:#CBD5E1;" id="stickyLabel">Cicilan / Bln</div>
+      <div style="font-size:15px; font-weight:800; color:#F8E5BE;" id="stickyValue">-</div>
+    </div>
+    <button type="button" class="btn btn-gold" onclick="toggleMobileQuickView()">Lihat Quotation</button>
+  </div>
+
+  <script>
+    const PPN_DTP_FACTOR = 1.11;
+    let currentScheme = 'kpr_express';
+
+    function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('printDate').value = today;
+      document.getElementById('outRef').textContent = 'ASC-' + Math.floor(100000 + Math.random() * 900000);
+      renderAll();
+    }
+
+    function setInputsLocked(isLocked) {
+      const wrap = document.getElementById('lockedFieldsWrap');
+      wrap.classList.toggle('is-locked', isLocked);
+
+      const controls = wrap.querySelectorAll('input, select, button');
+      controls.forEach((el) => {
+        el.disabled = isLocked;
+      });
+
+      const copyBtn = document.getElementById('copyWaBtn');
+      if (copyBtn) {
+        copyBtn.disabled = isLocked;
+      }
+    }
+
+    function handlePrintPdf() {
+      const customerInput = document.getElementById('customerName');
+      const salesInput = document.getElementById('salesName');
+      const customerRaw = customerInput.value.trim();
+      const salesRaw = salesInput.value.trim();
+
+      if (!customerRaw || !salesRaw) {
+        alert('Lengkapi dahulu datanya');
+        switchMobileTab('input');
+        if (!customerRaw) {
+          customerInput.focus();
+        } else {
+          salesInput.focus();
+        }
+        return;
+      }
+
+      window.print();
+    }
+
+    function formatIDR(num) {
+      const safe = Number.isFinite(num) ? Math.round(num) : 0;
+      return 'Rp ' + safe.toLocaleString('id-ID');
+    }
+
+    function formatDateIndo(isoStr) {
+      if (!isoStr) return '-';
+      const parts = isoStr.split('-');
+      if (parts.length !== 3) return isoStr;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+      return `${parseInt(parts[2], 10)} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+    }
+
+    function formatBpkIbuName(rawName) {
+      const cleaned = (rawName || '').trim();
+      if (!cleaned) return '';
+      if (/^(bpk|bapak|ibu|sdr|sdri)\b/i.test(cleaned)) {
+        return cleaned;
+      }
+      return 'Bpk/Ibu ' + cleaned;
+    }
+
+    function pmt(annualRatePct, totalMonths, principal) {
+      if (principal <= 0 || totalMonths <= 0) return 0;
+      const r = (annualRatePct / 100) / 12;
+      if (r === 0) return principal / totalMonths;
+      return principal * (r * Math.pow(1 + r, totalMonths)) / (Math.pow(1 + r, totalMonths) - 1);
+    }
+
+    function remainingBalanceAfterMonths(annualRatePct, totalMonths, principal, paidMonths) {
+      if (principal <= 0 || totalMonths <= 0) return 0;
+      if (paidMonths <= 0) return principal;
+      if (paidMonths >= totalMonths) return 0;
+      const r = (annualRatePct / 100) / 12;
+      if (r === 0) {
+        return principal * (1 - paidMonths / totalMonths);
+      }
+      const factorTotal = Math.pow(1 + r, totalMonths);
+      const factorPaid = Math.pow(1 + r, paidMonths);
+      return principal * ((factorTotal - factorPaid) / (factorTotal - 1));
+    }
+
+    function applyUnitPreset() {
+      const val = document.getElementById('unitSelect').value;
+      if (val === 'custom') return;
+      const [name, spec, price] = val.split('|');
+      document.getElementById('unitTitle').value = name;
+      document.getElementById('unitSpec').value = spec;
+      document.getElementById('unitPrice').value = price;
+      renderAll();
+    }
+
+    function setScheme(scheme) {
+      currentScheme = scheme;
+      document.getElementById('btnKprExpress').classList.toggle('active', scheme === 'kpr_express');
+      document.getElementById('btnKprCicil').classList.toggle('active', scheme === 'kpr_cicil');
+      document.getElementById('btnCash').classList.toggle('active', scheme === 'cash_bertahap');
+      document.getElementById('btnCashKeras').classList.toggle('active', scheme === 'cash_keras');
+
+      const isKpr = scheme === 'kpr_express' || scheme === 'kpr_cicil';
+      document.getElementById('kprInputs').style.display = isKpr ? 'block' : 'none';
+      document.getElementById('cashInputs').style.display = scheme === 'cash_bertahap' ? 'block' : 'none';
+      document.getElementById('cashKerasInputs').style.display = scheme === 'cash_keras' ? 'block' : 'none';
+      document.getElementById('dpCicilField').style.display = scheme === 'kpr_cicil' ? 'block' : 'none';
+
+      renderAll();
+    }
+
+    function resetDefaults() {
+      document.getElementById('customerName').value = '';
+      document.getElementById('salesName').value = '';
+      document.getElementById('unitSelect').value = 'Cluster Allurea — Tipe A|LT 60 m² / LB 67 m²|1271949000';
+      applyUnitPreset();
+      document.getElementById('bookingFee').value = 25000000;
+      document.getElementById('promoVal').value = 0;
+      document.getElementById('promoType').value = 'pct';
+      document.getElementById('specialPromoVal').value = 0;
+      document.getElementById('specialPromoType').value = 'pct';
+      document.getElementById('ppnDtp').value = 'no';
+      document.getElementById('dpVal').value = 10;
+      document.getElementById('dpType').value = 'pct';
+      document.getElementById('tenorYears').value = 15;
+      document.getElementById('dpTenorMonths').value = 6;
+      document.getElementById('fixedRate').value = 7;
+      document.getElementById('fixedYears').value = 3;
+      document.getElementById('floatingRate').value = '';
+      document.getElementById('bankFeePct').value = 3;
+      document.getElementById('subsidiVal').value = 0;
+      document.getElementById('subsidiType').value = 'pct';
+      document.getElementById('legalFeePct').value = 7;
+      document.getElementById('cashKerasLegalPct').value = 7;
+      document.getElementById('showKprFeeToggle').checked = false;
+      document.getElementById('showLegalFeeToggle').checked = false;
+      document.getElementById('showCashLegalToggle').checked = false;
+      document.getElementById('showIncomeToggle').checked = false;
+      document.getElementById('cashMonths').value = 24;
+      setScheme('kpr_express');
+    }
+
+    function switchMobileTab(tab) {
+      const inputPanel = document.getElementById('panelInput');
+      const previewPanel = document.getElementById('panelPreview');
+      const tabInputBtn = document.getElementById('tabInputBtn');
+      const tabPreviewBtn = document.getElementById('tabPreviewBtn');
+
+      if (tab === 'input') {
+        inputPanel.classList.remove('hidden-tab');
+        previewPanel.classList.add('hidden-tab');
+        tabInputBtn.classList.add('active');
+        tabPreviewBtn.classList.remove('active');
+      } else {
+        inputPanel.classList.add('hidden-tab');
+        previewPanel.classList.remove('hidden-tab');
+        tabInputBtn.classList.remove('active');
+        tabPreviewBtn.classList.add('active');
+      }
+    }
+
+    function toggleMobileQuickView() {
+      const isPreviewHidden = document.getElementById('panelPreview').classList.contains('hidden-tab');
+      switchMobileTab(isPreviewHidden ? 'preview' : 'input');
+    }
+
+    function copyWaText() {
+      const ta = document.getElementById('waText');
+      if (!ta.value || ta.dataset.locked === 'true') return;
+      ta.select();
+      ta.setSelectionRange(0, 99999);
+      navigator.clipboard?.writeText(ta.value).catch(() => document.execCommand('copy'));
+      const status = document.getElementById('copyStatus');
+      status.textContent = 'Teks tersalin!';
+      setTimeout(() => { status.textContent = ''; }, 2000);
+    }
+
+    function getSchemeLabel(scheme) {
+      if (scheme === 'cash_keras') return 'Cash Keras';
+      if (scheme === 'cash_bertahap') return 'Cash Bertahap';
+      if (scheme === 'kpr_cicil') return 'Opsi KPR DP Cicil';
+      return 'KPR (DP 1x Bayar)';
+    }
+
+    function buildExcludedFeeNote(includeKpr, includeLegal) {
+      const missing = [];
+      if (!includeKpr) missing.push('biaya KPR');
+      if (!includeLegal) missing.push('biaya Legal / Surat - Surat');
+      if (missing.length === 0) return '';
+      return `Simulasi di atas belum termasuk ${missing.join(' dan ')}.`;
+    }
+
+    function renderAll() {
+      const customerRaw = document.getElementById('customerName').value.trim();
+      const salesRaw = document.getElementById('salesName').value.trim();
+
+      const unitTitle = document.getElementById('unitTitle').value.trim() || 'Unit Asthara Skyfront City';
+      const unitSpec = document.getElementById('unitSpec').value.trim() || '-';
+      const printDate = document.getElementById('printDate').value;
+
+      const unitPrice = Math.max(0, Number(document.getElementById('unitPrice').value) || 0);
+      const bookingFee = Math.max(0, Number(document.getElementById('bookingFee').value) || 0);
+      const promoVal = Math.max(0, Number(document.getElementById('promoVal').value) || 0);
+      const promoType = document.getElementById('promoType').value;
+      const ppnDtp = document.getElementById('ppnDtp').value;
+
+      // 1. Potong Developer Promo terlebih dahulu dari harga unit pricelist
+      const promoAmount = promoType === 'pct' ? unitPrice * (promoVal / 100) : promoVal;
+      const afterDevPromo = Math.max(0, unitPrice - promoAmount);
+
+      // 2. Jika Cash Keras, potong Special Promo dari harga setelah Developer Promo (tidak digabung)
+      const isCashKeras = currentScheme === 'cash_keras';
+      const specialPromoVal = Math.max(0, Number(document.getElementById('specialPromoVal').value) || 0);
+      const specialPromoType = document.getElementById('specialPromoType').value;
+      const specialPromoAmount = isCashKeras
+        ? (specialPromoType === 'pct' ? afterDevPromo * (specialPromoVal / 100) : specialPromoVal)
+        : 0;
+      const afterSpecialPromo = Math.max(0, afterDevPromo - specialPromoAmount);
+
+      // 3. Free PPN DTP (jika aktif) diterapkan setelah promo
+      const ftp = ppnDtp === 'yes' ? afterSpecialPromo / PPN_DTP_FACTOR : afterSpecialPromo;
+
+      const badges = [];
+      if (promoAmount > 0) badges.push('Promo Developer');
+      if (specialPromoAmount > 0) badges.push('Special Promo Cash Keras');
+      if (ppnDtp === 'yes') badges.push('Free PPN DTP');
+      document.getElementById('outBenefitBadge').textContent = badges.length ? badges.join(' • ') : 'Asthara Skyfront City';
+
+      document.getElementById('outDate').textContent = formatDateIndo(printDate);
+      document.getElementById('outUnitTitle').textContent = unitTitle;
+      document.getElementById('outUnitSpec').textContent = unitSpec;
+      document.getElementById('outBasePrice').textContent = formatIDR(unitPrice);
+      document.getElementById('outPromoVal').textContent = '- ' + formatIDR(promoAmount);
+      document.getElementById('outSpecialPromoRow').style.display = isCashKeras ? 'flex' : 'none';
+      document.getElementById('outSpecialPromoVal').textContent = '- ' + formatIDR(specialPromoAmount);
+      document.getElementById('outPpnRow').style.display = ppnDtp === 'yes' ? 'flex' : 'none';
+      document.getElementById('outFtp').textContent = formatIDR(ftp);
+
+      const alertBox = document.getElementById('alertBox');
+      alertBox.style.display = 'none';
+      alertBox.textContent = '';
+
+      const reqAlert = document.getElementById('requiredIdentityAlert');
+      const lockedBanner = document.getElementById('lockedBanner');
+      const heroBox = document.getElementById('heroPaymentBox');
+      const tbody = document.getElementById('breakdownBody');
+      const incomeBox = document.getElementById('incomeNoteBox');
+      const excludedNoteEl = document.getElementById('excludedFeeNote');
+      const waTextarea = document.getElementById('waText');
+      incomeBox.style.display = 'none';
+      excludedNoteEl.style.display = 'none';
+      excludedNoteEl.textContent = '';
+
+      if (!customerRaw || !salesRaw) {
+        setInputsLocked(true);
+
+        const missing = [];
+        if (!customerRaw) missing.push('Nama Customer');
+        if (!salesRaw) missing.push('Nama Sales');
+        const msg = `Wajib diisi terlebih dahulu: ${missing.join(' dan ')}. Kolom input lain dikunci sampai kedua nama terisi.`;
+
+        reqAlert.style.display = 'block';
+        reqAlert.textContent = msg;
+
+        lockedBanner.style.display = 'block';
+        lockedBanner.textContent = `Wajib diisi terlebih dahulu: ${missing.join(' dan ')}. Perhitungan, quotation, dan teks WhatsApp belum ditampilkan.`;
+
+        document.getElementById('outCustomer').textContent = customerRaw ? formatBpkIbuName(customerRaw) : 'Belum diisi';
+        document.getElementById('outSalesName').textContent = salesRaw || 'Belum diisi';
+        document.getElementById('outSchemeLabel').textContent = getSchemeLabel(currentScheme);
+
+        heroBox.innerHTML = `
+          <div class="hero-label">Simulasi Terkunci</div>
+          <div class="hero-amount" style="font-size:18px;">Lengkapi Nama Customer &amp; Nama Sales</div>
+          <div class="hero-sub">Angka cicilan dan rincian biaya akan muncul setelah kedua nama terisi.</div>
+        `;
+
+        tbody.innerHTML = `
+          <tr><td>Status Perhitungan</td><td class="num">Menunggu Nama Customer &amp; Sales</td></tr>
+        `;
+
+        document.getElementById('stickyLabel').textContent = 'Status';
+        document.getElementById('stickyValue').textContent = 'Lengkapi Nama';
+
+        waTextarea.dataset.locked = 'true';
+        waTextarea.value = `Lengkapi ${missing.join(' dan ')} terlebih dahulu untuk memunculkan format teks WhatsApp.`;
+        return;
+      }
+
+      setInputsLocked(false);
+      reqAlert.style.display = 'none';
+      lockedBanner.style.display = 'none';
+      waTextarea.dataset.locked = 'false';
+
+      const sapaanCustomer = formatBpkIbuName(customerRaw);
+      const salesName = salesRaw;
+
+      document.getElementById('outCustomer').textContent = sapaanCustomer;
+      document.getElementById('outSalesName').textContent = salesName;
+
+      let waSummary = '';
+
+      if (currentScheme === 'cash_keras') {
+        document.getElementById('outSchemeLabel').textContent = 'Cash Keras';
+        const sisaPelunasan = Math.max(0, ftp - bookingFee);
+        const legalFeePct = Math.max(0, Number(document.getElementById('cashKerasLegalPct').value) || 0);
+        const legalFee = ftp * (legalFeePct / 100);
+        const showCashLegal = document.getElementById('showCashLegalToggle').checked;
+
+        if (bookingFee > ftp && ftp > 0) {
+          alertBox.style.display = 'block';
+          alertBox.textContent = 'Catatan: Booking Fee melebihi Final Transaction Price. Sisa pelunasan dibulatkan ke Rp 0.';
+        }
+
+        heroBox.innerHTML = `
+          <div class="hero-label">Final Transaction Price (Cash Keras)</div>
+          <div class="hero-amount">${formatIDR(ftp)}</div>
+          <div class="hero-sub">Sisa pelunasan setelah Booking Fee: <strong>${formatIDR(sisaPelunasan)}</strong>${showCashLegal ? ' (Biaya Legal dibayar saat siap AJB)' : ''}</div>
+        `;
+
+        const legalRowHtml = showCashLegal ? `
+          <tr class="spacer-row"><td colspan="2"></td></tr>
+          <tr class="ajb-note">
+            <td>
+              Biaya Legal / Surat-Surat (${legalFeePct}% FTP)
+              <span class="ajb-subnote">Catatan: Dibayarkan nanti pada saat siap AJB (dibayar di belakang, di luar pelunasan unit).</span>
+            </td>
+            <td class="num">${formatIDR(legalFee)}</td>
+          </tr>
+        ` : '';
+
+        tbody.innerHTML = `
+          <tr><td>Harga Pricelist</td><td class="num">${formatIDR(unitPrice)}</td></tr>
+          <tr><td>Potongan Developer Promo</td><td class="num">- ${formatIDR(promoAmount)}</td></tr>
+          <tr><td>Potongan Special Promo Cash Keras (setelah Dev. Promo)</td><td class="num">- ${formatIDR(specialPromoAmount)}</td></tr>
+          <tr class="highlight"><td>Final Transaction Price (FTP)</td><td class="num">${formatIDR(ftp)}</td></tr>
+          <tr><td>Booking Fee (Dibayar di Awal)</td><td class="num">${formatIDR(bookingFee)}</td></tr>
+          <tr><td>Sisa Pelunasan Cash Keras</td><td class="num">${formatIDR(sisaPelunasan)}</td></tr>
+          ${legalRowHtml}
+        `;
+
+        if (!showCashLegal) {
+          excludedNoteEl.style.display = 'block';
+          excludedNoteEl.textContent = 'Simulasi di atas belum termasuk biaya Legal / Surat - Surat.';
+        }
+
+        document.getElementById('stickyLabel').textContent = 'FTP Cash Keras';
+        document.getElementById('stickyValue').textContent = formatIDR(ftp);
+
+        waSummary =
+`Halo ${sapaanCustomer}, Terima kasih sudah datang ke Asthara Skyfront City. Ijin ${salesName} sampaikan ringkasan simulasi ${unitTitle} sesuai dengan diskusi kita tadi:
+
+- Skema: Cash Keras
+- Final Transaction Price: ${formatIDR(ftp)}
+- Booking Fee: ${formatIDR(bookingFee)}
+- Sisa Pelunasan: ${formatIDR(sisaPelunasan)}
+
+Terlampir Dokumen penawaran lengkap dalam format PDF. Jika ada pertanyaan yg ingin di diskusikan dapat langsung menghubungi ${salesName}
+
+Hormat kami,
+${salesName}`;
+
+      } else if (currentScheme === 'cash_bertahap') {
+        document.getElementById('outSchemeLabel').textContent = 'Cash Bertahap';
+        const months = Math.max(1, Math.round(Number(document.getElementById('cashMonths').value) || 1));
+        const sisaBayar = Math.max(0, ftp - bookingFee);
+        const cicilanBulan = sisaBayar / months;
+
+        heroBox.innerHTML = `
+          <div class="hero-label">Cicilan Cash Bertahap / Bulan (${months} Bulan • 0% Bunga)</div>
+          <div class="hero-amount">${formatIDR(cicilanBulan)}</div>
+          <div class="hero-sub">Total pembayaran sama dengan Final Transaction Price (${formatIDR(ftp)})</div>
+        `;
+
+        tbody.innerHTML = `
+          <tr><td>Final Transaction Price (FTP)</td><td class="num">${formatIDR(ftp)}</td></tr>
+          <tr><td>Booking Fee (Dibayar di Awal)</td><td class="num">${formatIDR(bookingFee)}</td></tr>
+          <tr><td>Sisa Pembayaran Dicicil (${months} bln)</td><td class="num">${formatIDR(sisaBayar)}</td></tr>
+          <tr class="highlight"><td>Cicilan per Bulan</td><td class="num">${formatIDR(cicilanBulan)}</td></tr>
+        `;
+
+        document.getElementById('stickyLabel').textContent = `Cash ${months} Bln / Bln`;
+        document.getElementById('stickyValue').textContent = formatIDR(cicilanBulan);
+
+        waSummary =
+`Halo ${sapaanCustomer}, Terima kasih sudah datang ke Asthara Skyfront City. Ijin ${salesName} sampaikan ringkasan simulasi ${unitTitle} sesuai dengan diskusi kita tadi:
+
+- Skema: Cash Bertahap (${months} bln)
+- Final Transaction Price: ${formatIDR(ftp)}
+- Booking Fee: ${formatIDR(bookingFee)}
+- Cicilan per Bulan: ${formatIDR(cicilanBulan)}
+
+Terlampir Dokumen penawaran lengkap dalam format PDF. Jika ada pertanyaan yg ingin di diskusikan dapat langsung menghubungi ${salesName}
+
+Hormat kami,
+${salesName}`;
+
+      } else {
+        const isCicilDp = currentScheme === 'kpr_cicil';
+        document.getElementById('outSchemeLabel').textContent = isCicilDp ? 'Opsi KPR DP Cicil' : 'KPR (DP 1x Bayar)';
+
+        const dpVal = Math.max(0, Number(document.getElementById('dpVal').value) || 0);
+        const dpType = document.getElementById('dpType').value;
+        const totalDp = dpType === 'pct' ? ftp * (dpVal / 100) : dpVal;
+        const sisaDp = Math.max(0, totalDp - bookingFee);
+
+        if (bookingFee > totalDp && totalDp > 0) {
+          alertBox.style.display = 'block';
+          alertBox.textContent = 'Catatan: Booking Fee melebihi nilai DP. Sisa DP dibulatkan ke Rp 0.';
+        }
+
+        const plafon = Math.max(0, ftp - totalDp);
+        const tenorYears = Math.max(1, Number(document.getElementById('tenorYears').value) || 1);
+        const totalMonths = Math.round(tenorYears * 12);
+
+        const fixedRate = Math.max(0, Number(document.getElementById('fixedRate').value) || 0);
+        const fixedYears = Math.max(0, Number(document.getElementById('fixedYears').value) || 0);
+        const fixedMonths = Math.min(totalMonths, Math.round(fixedYears * 12));
+
+        const floatingInput = document.getElementById('floatingRate').value.trim();
+        const floatingRate = floatingInput === '' ? fixedRate : Math.max(0, Number(floatingInput) || 0);
+
+        const bankFeePct = Math.max(0, Number(document.getElementById('bankFeePct').value) || 0);
+        const subsidiVal = Math.max(0, Number(document.getElementById('subsidiVal').value) || 0);
+        const subsidiType = document.getElementById('subsidiType').value;
+        const subsidiRp = subsidiType === 'pct' ? plafon * (subsidiVal / 100) : subsidiVal;
+
+        const grossBankFee = plafon * (bankFeePct / 100);
+        const netBankFee = Math.max(0, grossBankFee - subsidiRp);
+
+        const legalFeePct = Math.max(0, Number(document.getElementById('legalFeePct').value) || 0);
+        const legalFee = ftp * (legalFeePct / 100);
+
+        const showKprFee = document.getElementById('showKprFeeToggle').checked;
+        const showLegalFee = document.getElementById('showLegalFeeToggle').checked;
+
+        const noteText = buildExcludedFeeNote(showKprFee, showLegalFee);
+        if (noteText) {
+          excludedNoteEl.style.display = 'block';
+          excludedNoteEl.textContent = noteText;
+        }
+
+        const cicilanFixed = fixedMonths > 0 ? pmt(fixedRate, totalMonths, plafon) : pmt(floatingRate, totalMonths, plafon);
+        const sisaPokokAfterFixed = remainingBalanceAfterMonths(fixedRate, totalMonths, plafon, fixedMonths);
+        const sisaTenorMonths = Math.max(1, totalMonths - fixedMonths);
+        const cicilanFloating = fixedMonths >= totalMonths ? cicilanFixed : pmt(floatingRate, sisaTenorMonths, sisaPokokAfterFixed);
+
+        const showIncome = document.getElementById('showIncomeToggle').checked;
+        if (showIncome) {
+          const idealIncome = cicilanFixed * 3;
+          incomeBox.style.display = 'block';
+          incomeBox.innerHTML = `<strong>Estimasi Penghasilan Ideal (acuan ±3× cicilan awal):</strong> ${formatIDR(idealIncome)} / bulan`;
+        }
+
+        const legalRowHtml = showLegalFee ? `
+          <tr class="spacer-row"><td colspan="2"></td></tr>
+          <tr class="ajb-note">
+            <td>
+              Biaya Legal / Surat-Surat (${legalFeePct}% FTP)
+              <span class="ajb-subnote">Catatan: Dibayarkan nanti pada saat siap AJB (dibayar di belakang, di luar Total Dana di Awal).</span>
+            </td>
+            <td class="num">${formatIDR(legalFee)}</td>
+          </tr>
+        ` : '';
+
+        if (!isCicilDp) {
+          const totalDanaAwal = totalDp + (showKprFee ? netBankFee : 0);
+          heroBox.innerHTML = `
+            <div class="hero-label">Estimasi Cicilan Masa Fixed (${fixedYears} Thn @ ${fixedRate}%)</div>
+            <div class="hero-amount">${formatIDR(cicilanFixed)} <span style="font-size:14px; font-weight:600;">/ bulan</span></div>
+            <div class="hero-grid">
+              <div>
+                <div class="hero-label">Setelah Fixed (@ ${floatingRate}%)</div>
+                <div style="font-size:14px; font-weight:700; margin-top:2px;">${formatIDR(cicilanFloating)} / bln</div>
+              </div>
+              <div>
+                <div class="hero-label">Plafon KPR &amp; Tenor</div>
+                <div style="font-size:13px; font-weight:700; margin-top:2px;">${formatIDR(plafon)} (${tenorYears} Thn)</div>
+              </div>
+            </div>
+          `;
+
+          const kprFeeRowHtml = showKprFee
+            ? `<tr><td>Biaya Bank / KPR Bersih (${bankFeePct}% plafon, setelah subsidi)</td><td class="num">${formatIDR(netBankFee)}</td></tr>`
+            : '';
+
+          tbody.innerHTML = `
+            <tr><td>Booking Fee</td><td class="num">${formatIDR(bookingFee)}</td></tr>
+            <tr><td>Sisa Pelunasan DP 1x (Total DP ${formatIDR(totalDp)})</td><td class="num">${formatIDR(sisaDp)}</td></tr>
+            ${kprFeeRowHtml}
+            <tr class="highlight"><td>Total Dana di Awal</td><td class="num">${formatIDR(totalDanaAwal)}</td></tr>
+            ${legalRowHtml}
+          `;
+
+          document.getElementById('stickyLabel').textContent = 'Cicilan Fixed / Bln';
+          document.getElementById('stickyValue').textContent = formatIDR(cicilanFixed);
+
+          waSummary =
+`Halo ${sapaanCustomer}, Terima kasih sudah datang ke Asthara Skyfront City. Ijin ${salesName} sampaikan ringkasan simulasi ${unitTitle} sesuai dengan diskusi kita tadi:
+
+- Skema: KPR DP 1x Bayar (Tenor ${tenorYears} thn)
+- Final Transaction Price: ${formatIDR(ftp)}
+- Plafon KPR: ${formatIDR(plafon)}
+- Cicilan Masa Fixed (${fixedYears} thn @ ${fixedRate}%): ${formatIDR(cicilanFixed)}/bln
+- Total Dana di Awal: ${formatIDR(totalDanaAwal)}
+
+Terlampir Dokumen penawaran lengkap dalam format PDF. Jika ada pertanyaan yg ingin di diskusikan dapat langsung menghubungi ${salesName}
+
+Hormat kami,
+${salesName}`;
+
+        } else {
+          const dpMonths = Math.max(1, Math.round(Number(document.getElementById('dpTenorMonths').value) || 6));
+          const cicilanDpBulan = sisaDp / dpMonths;
+          const estimasiBiayaAkad = netBankFee;
+
+          heroBox.innerHTML = `
+            <div class="hero-label">Tahap 1: Cicilan DP / Bulan (${dpMonths} Bulan • 0% Bunga)</div>
+            <div class="hero-amount">${formatIDR(cicilanDpBulan)} <span style="font-size:14px; font-weight:600;">/ bulan</span></div>
+            <div class="hero-grid">
+              <div>
+                <div class="hero-label">Tahap 2: Cicilan KPR Fixed (${fixedYears} Thn @ ${fixedRate}%)</div>
+                <div style="font-size:14px; font-weight:700; margin-top:2px;">${formatIDR(cicilanFixed)} / bln</div>
+              </div>
+              <div>
+                <div class="hero-label">Setelah Fixed (@ ${floatingRate}%)</div>
+                <div style="font-size:14px; font-weight:700; margin-top:2px;">${formatIDR(cicilanFloating)} / bln</div>
+              </div>
+            </div>
+          `;
+
+          const akadRowHtml = showKprFee
+            ? `<tr><td>Estimasi Biaya Akad (Biaya Bank Bersih ${bankFeePct}%)</td><td class="num">${formatIDR(estimasiBiayaAkad)}</td></tr>`
+            : '';
+
+          tbody.innerHTML = `
+            <tr><td>Dana Awal Hari Ini (Booking Fee)</td><td class="num">${formatIDR(bookingFee)}</td></tr>
+            <tr><td>Total DP (${formatIDR(totalDp)}) — Sisa Dicicil ${dpMonths} Bln</td><td class="num">${formatIDR(sisaDp)}</td></tr>
+            <tr><td>Plafon KPR (Tenor ${tenorYears} Tahun)</td><td class="num">${formatIDR(plafon)}</td></tr>
+            ${akadRowHtml}
+            <tr class="highlight"><td>Cicilan DP per Bulan (${dpMonths} Bulan)</td><td class="num">${formatIDR(cicilanDpBulan)}</td></tr>
+            ${legalRowHtml}
+          `;
+
+          document.getElementById('stickyLabel').textContent = `Cicilan DP (${dpMonths} Bln)`;
+          document.getElementById('stickyValue').textContent = formatIDR(cicilanDpBulan);
+
+          waSummary =
+`Halo ${sapaanCustomer}, Terima kasih sudah datang ke Asthara Skyfront City. Ijin ${salesName} sampaikan ringkasan simulasi ${unitTitle} sesuai dengan diskusi kita tadi:
+
+- Skema: Opsi KPR DP Cicil ${dpMonths}x (Tenor ${tenorYears} thn)
+- Final Transaction Price: ${formatIDR(ftp)}
+- Plafon KPR: ${formatIDR(plafon)}
+- Cicilan DP (${dpMonths} bln): ${formatIDR(cicilanDpBulan)}/bln
+- Cicilan Masa Fixed (${fixedYears} thn @ ${fixedRate}%): ${formatIDR(cicilanFixed)}/bln${showKprFee ? `\n- Estimasi Biaya Akad (Biaya Bank): ${formatIDR(estimasiBiayaAkad)}` : ''}
+
+Terlampir Dokumen penawaran lengkap dalam format PDF. Jika ada pertanyaan yg ingin di diskusikan dapat langsung menghubungi ${salesName}
+
+Hormat kami,
+${salesName}`;
+        }
+      }
+
+      waTextarea.value = waSummary;
+    }
+
+    init();
+  </script>
+</body>
+</html>
